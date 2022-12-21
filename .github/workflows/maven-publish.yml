@@ -1,54 +1,31 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+        
+name: Maven CI with Nexus IQ
 
-name: Maven Package
-
-on:
-  release:
-    types: [created]
+on: [push]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
+    - uses: actions/checkout@v1
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
       with:
-        java-version: '11'
-        distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
-
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        
-    - name: Nexus IQ for GitHub Actions
-  # You may pin to the exact commit or the version.
-  # uses: sonatype-nexus-community/iq-github-action@ef2fae57de0888b50cedf3c9e1c2886bf3e5f21a
-  uses: sonatype-nexus-community/iq-github-action@1.1.1
-  with:
-    # Nexus IQ Server URL
-    serverUrl: https://iq.bbarbosa.eu.ngrok.io/
-    # Username to connect to IQ Server for policy evaluation
-    username: admin
-    # Password to connect to IQ Server for policy evaluation
-    password: 01021994 
-    # Determines the policy elements (policies, labels, and license threat groups) to associate with this build, and is managed via the Nexus IQ Server.
-    applicationId: WebGoat__bcbarbosa
-    # Controls the stage the policy evaluation will be run against on the Nexus IQ Server.
-    stage: # default is Build
-    # This is the path to a specific application archive file, a directory containing such archives or the ID of a Docker image. For archives, a number of formats are supported, including jar, war, ear, tar, tar.gz, zip and many others.
-    target: .
+        java-version: 1.8
+    - name: Sonatype CLM for Maven
+      run: mvn com.sonatype.clm:clm-maven-plugin:evaluate -Dclm.applicationId=WebGoat__bcbarbosa -Dclm.serverUrl=https://iq.bbarbosa.eu.ngrok.io/ -Dclm.username=admin -Dclm.password=01021994
+    - name: Nexus IQ Policy Evaluation
+      uses: sonatype-nexus-community/iq-github-action@master
+      with:
+        serverUrl: https://iq.bbarbosa.eu.ngrok.io/
+        username: admin
+        password: ${{ secrets.01021994 }}
+        applicationId: WebGoat__bcbarbosa
+        stage: Build
+        target: .
         
   
