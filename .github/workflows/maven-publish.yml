@@ -19,11 +19,11 @@ jobs:
     - name: Sonatype CLM for Maven
       run: mvn com.sonatype.clm:clm-maven-plugin:evaluate -Dclm.applicationId=WebGoat__bcbarbosa -Dclm.serverUrl=https://iq.bbarbosa.eu.ngrok.io/ -Dclm.username=admin -Dclm.password=01021994
     - name: Nexus IQ Policy Evaluation
-      uses: sonatype-nexus-community/iq-github-action@master
+      uses: sonatype-nexus-community/iq-github-action@develop
       with:
-        serverUrl: https://iq.bbarbosa.eu.ngrok.io/
-        username: admin
-        password: ${{ secrets.01021994 }}
+        serverUrl: ${{ secrets.iqurl }}
+        username: ${{ secrets.iquser }}
+        password: ${{ secrets.iqpassword }}
         applicationId: WebGoat__bcbarbosa
         stage: Build
         target: .
