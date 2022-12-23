@@ -16,6 +16,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Build with Maven
+      run: mvn clean package
     - name: Sonatype CLM for Maven
       run: |
         mvn com.sonatype.clm:clm-maven-plugin:evaluate -Dclm.applicationId=WebGoat__bcbarbosa -Dclm.serverUrl=${{ secrets.iqurl }} -Dclm.username=${{ secrets.iquser }} -Dclm.password=${{ secrets.iqpassword }}
