@@ -1,7 +1,7 @@
 name: Maven CI with Nexus IQ
 
 on: [push]
-
+ 
 jobs:
   build:
 
